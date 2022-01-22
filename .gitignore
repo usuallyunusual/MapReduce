@@ -1,0 +1,7 @@
+# IDE files
+.idea
+
+# Python env
+venv/
+
+*pycache*
