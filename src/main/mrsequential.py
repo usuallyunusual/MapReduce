@@ -28,8 +28,8 @@ class MapReduceSequential:
         self.run_map()
         self.run_reduce()
         self.intermediate_kv_pairs.sort()
-        self.print_kv_pairs()
-    
+        self.run_reduce()
+
     def print_kv_pairs(self):
         """
         Utility to print data from kv pairs
@@ -75,9 +75,21 @@ class MapReduceSequential:
 
     def run_reduce(self):
         """
-        Runs the reduce and writes to file
+        Runs the custom reduce and writes to file
         """
-        pass
+        keyval_index = 0
+        while keyval_index < len(self.intermediate_kv_pairs):
+            group_index = keyval_index + 1
+            while group_index < len(self.intermediate_kv_pairs) \
+                    and self.intermediate_kv_pairs[group_index] == self.intermediate_kv_pairs[keyval_index]:
+                group_index += 1
+            keyval_group_with_same_key = KeyValue(self.intermediate_kv_pairs[keyval_index].key, list())
+            for keyval in self.intermediate_kv_pairs[keyval_index:group_index + 1]:
+                keyval_group_with_same_key.value.append(int(keyval.value))
+            keyval_index = group_index + 1
+            reduced_keyval = self.mr_app_class.reduce(keyval_group_with_same_key)
+            with open("mr-out.txt", "a") as output_file:
+                output_file.write(f"{reduced_keyval.key} {reduced_keyval.value}\n")
 
 
 if __name__ == "__main__":

@@ -16,4 +16,5 @@ def reduce(keyval):
     """
     Custom reduce
     """
+    keyval.value = sum(keyval.value)
     return keyval
